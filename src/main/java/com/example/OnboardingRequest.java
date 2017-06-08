@@ -40,24 +40,24 @@ public class OnboardingRequest {
 			    ProcessEngine processEngine = cfg.buildProcessEngine();
 			    String pName = processEngine.getName();
 			    String ver = ProcessEngine.VERSION;
-			    System.out.println("ProcessEngine [" + pName + "] Version: [" + ver + "]");
+			    System.out.printf("ProcessEngine [%s] Version: [%s]",pName,ver);
 	
 	    RepositoryService repositoryService = processEngine.getRepositoryService();
+	    
 	    Deployment deployment = repositoryService.createDeployment()
 	        .addClasspathResource("onboarding.bpmn20.xml").deploy();
+	    
 	    ProcessDefinition processDefinition = repositoryService.createProcessDefinitionQuery()
 	        .deploymentId(deployment.getId()).singleResult();
-	    System.out.println(
-	        "Found process definition [" 
-	            + processDefinition.getName() + "] with id [" 
-	            + processDefinition.getId() + "]");
+	    
+	    System.out.printf("Found process definition [%s] with id [%s]",processDefinition.getName(),processDefinition.getId());
 	    
 	    RuntimeService runtimeService = processEngine.getRuntimeService();
 	    ProcessInstance processInstance = runtimeService
 	        .startProcessInstanceByKey("onboarding");
-	    System.out.println("Onboarding process started with process instance id [" 
-	        + processInstance.getProcessInstanceId()
-	        + "] key [" + processInstance.getProcessDefinitionKey() + "]");
+	    System.out.printf("Onboarding process started with process instance id [%s] key [%s]",
+	    					processInstance.getProcessInstanceId(),
+	    					processInstance.getProcessDefinitionKey());
 	    
 	    TaskService taskService = processEngine.getTaskService();
 	    FormService formService = processEngine.getFormService();
@@ -67,7 +67,9 @@ public class OnboardingRequest {
 	    while (processInstance != null && !processInstance.isEnded()) {
 	      List<Task> tasks = taskService.createTaskQuery()
 	          .taskCandidateGroup("managers").list();
+	      
 	      System.out.println("Active outstanding tasks: [" + tasks.size() + "]");
+	      
 	      for (int i = 0; i < tasks.size(); i++) {
 	        Task task = tasks.get(i);
 	        System.out.println("Processing Task [" + task.getName() + "]");
